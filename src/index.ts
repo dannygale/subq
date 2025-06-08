@@ -1,17 +1,18 @@
 #!/usr/bin/env node
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
-import { QProcessManager } from './process-manager.js';
+import { SessionManager } from './session-manager.js';
+import { HTTPMCPServer } from './http-transport.js';
 
 class SubQMCPServer {
   private server: Server;
-  private processManager: QProcessManager;
+  private sessionManager: SessionManager;
+  private httpServer!: HTTPMCPServer; // Will be initialized in run()
 
   constructor() {
     this.server = new Server(
@@ -26,7 +27,7 @@ class SubQMCPServer {
       }
     );
 
-    this.processManager = new QProcessManager();
+    this.sessionManager = SessionManager.getInstance();
     this.setupToolHandlers();
     this.setupErrorHandling();
   }
@@ -64,7 +65,7 @@ class SubQMCPServer {
           },
           {
             name: 'list',
-            description: 'List all running Q processes and their status',
+            description: 'List all running Q processes in your session',
             inputSchema: {
               type: 'object',
               properties: {},
@@ -72,7 +73,7 @@ class SubQMCPServer {
           },
           {
             name: 'get_output',
-            description: 'Get the output from a specific Q process',
+            description: 'Get the output from a specific Q process in your session',
             inputSchema: {
               type: 'object',
               properties: {
@@ -86,7 +87,7 @@ class SubQMCPServer {
           },
           {
             name: 'terminate',
-            description: 'Terminate a specific Q process',
+            description: 'Terminate a specific Q process in your session',
             inputSchema: {
               type: 'object',
               properties: {
@@ -100,7 +101,7 @@ class SubQMCPServer {
           },
           {
             name: 'send_to',
-            description: 'Send additional input to a running Q process',
+            description: 'Send additional input to a running Q process in your session',
             inputSchema: {
               type: 'object',
               properties: {
@@ -118,7 +119,7 @@ class SubQMCPServer {
           },
           {
             name: 'cleanup',
-            description: 'Clean up all finished Q processes',
+            description: 'Clean up all finished Q processes in your session',
             inputSchema: {
               type: 'object',
               properties: {},
@@ -132,24 +133,32 @@ class SubQMCPServer {
       const { name, arguments: args } = request.params;
 
       try {
+        // Session ID is injected by the HTTP transport layer
+        const sessionId: string = (args && typeof args === 'object' && typeof args.sessionId === 'string') 
+          ? args.sessionId 
+          : 'default-session';
+        
+        // Get or create session
+        const session = this.sessionManager.createSession(sessionId);
+        
         switch (name) {
           case 'spawn':
-            return await this.handleSpawnQProcess(args);
+            return await this.handleSpawnQProcess(args, session.processManager);
           
           case 'list':
-            return await this.handleListQProcesses();
+            return await this.handleListQProcesses(session.processManager);
           
           case 'get_output':
-            return await this.handleGetQProcessOutput(args);
+            return await this.handleGetQProcessOutput(args, session.processManager);
           
           case 'terminate':
-            return await this.handleTerminateQProcess(args);
+            return await this.handleTerminateQProcess(args, session.processManager);
           
           case 'send_to':
-            return await this.handleSendToQProcess(args);
+            return await this.handleSendToQProcess(args, session.processManager);
           
           case 'cleanup':
-            return await this.handleCleanupFinishedProcesses();
+            return await this.handleCleanupFinishedProcesses(session.processManager);
           
           default:
             throw new Error(`Unknown tool: ${name}`);
@@ -167,10 +176,10 @@ class SubQMCPServer {
     });
   }
 
-  private async handleSpawnQProcess(args: any) {
+  private async handleSpawnQProcess(args: any, processManager: any) {
     const { task, processId, timeout = 300, workingDirectory } = args;
     
-    const result = await this.processManager.spawnQProcess({
+    const result = await processManager.spawnQProcess({
       task,
       processId,
       timeout,
@@ -187,10 +196,10 @@ class SubQMCPServer {
     };
   }
 
-  private async handleListQProcesses() {
-    const processes = this.processManager.listProcesses();
+  private async handleListQProcesses(processManager: any) {
+    const processes = processManager.listProcesses();
     
-    const processInfo = processes.map(p => 
+    const processInfo = processes.map((p: any) => 
       `ID: ${p.id}\nStatus: ${p.status}\nTask: ${p.task}\nStarted: ${p.startTime.toISOString()}\nPID: ${p.pid || 'N/A'}`
     ).join('\n\n');
 
@@ -200,15 +209,15 @@ class SubQMCPServer {
           type: 'text',
           text: processes.length > 0 
             ? `Running Q Processes (${processes.length}):\n\n${processInfo}`
-            : 'No Q processes currently running.',
+            : 'No Q processes currently running in your session.',
         },
       ],
     };
   }
 
-  private async handleGetQProcessOutput(args: any) {
+  private async handleGetQProcessOutput(args: any, processManager: any) {
     const { processId } = args;
-    const output = await this.processManager.getProcessOutput(processId);
+    const output = await processManager.getProcessOutput(processId);
 
     return {
       content: [
@@ -220,9 +229,9 @@ class SubQMCPServer {
     };
   }
 
-  private async handleTerminateQProcess(args: any) {
+  private async handleTerminateQProcess(args: any, processManager: any) {
     const { processId } = args;
-    const success = await this.processManager.terminateProcess(processId);
+    const success = await processManager.terminateProcess(processId);
 
     return {
       content: [
@@ -230,15 +239,15 @@ class SubQMCPServer {
           type: 'text',
           text: success 
             ? `Process ${processId} terminated successfully.`
-            : `Failed to terminate process ${processId} or process not found.`,
+            : `Failed to terminate process ${processId} or process not found in your session.`,
         },
       ],
     };
   }
 
-  private async handleSendToQProcess(args: any) {
+  private async handleSendToQProcess(args: any, processManager: any) {
     const { processId, input } = args;
-    const success = await this.processManager.sendToProcess(processId, input);
+    const success = await processManager.sendToProcess(processId, input);
 
     return {
       content: [
@@ -246,20 +255,20 @@ class SubQMCPServer {
           type: 'text',
           text: success 
             ? `Input sent to process ${processId} successfully.`
-            : `Failed to send input to process ${processId}.`,
+            : `Failed to send input to process ${processId} in your session.`,
         },
       ],
     };
   }
 
-  private async handleCleanupFinishedProcesses() {
-    const cleaned = this.processManager.cleanupFinishedProcesses();
+  private async handleCleanupFinishedProcesses(processManager: any) {
+    const cleaned = processManager.cleanupFinishedProcesses();
 
     return {
       content: [
         {
           type: 'text',
-          text: `Cleaned up ${cleaned} finished processes.`,
+          text: `Cleaned up ${cleaned} finished processes from your session.`,
         },
       ],
     };
@@ -271,16 +280,28 @@ class SubQMCPServer {
     };
 
     process.on('SIGINT', async () => {
-      await this.processManager.cleanup();
+      console.error('\n[SubQ] Shutting down...');
+      
+      // Cleanup session manager
+      this.sessionManager.shutdown();
+      
+      // Stop HTTP server
+      await this.httpServer.stop();
+      
       await this.server.close();
       process.exit(0);
     });
   }
 
   async run() {
-    const transport = new StdioServerTransport();
-    await this.server.connect(transport);
-    console.error('SubQ MCP server running on stdio');
+    const args = process.argv.slice(2);
+    const port = parseInt(args.find(arg => arg.startsWith('--port='))?.split('=')[1] || '8947');
+
+    // Always run in HTTP/SSE mode
+    this.httpServer = new HTTPMCPServer(this.server, port);
+    await this.httpServer.start();
+    console.error('SubQ MCP server running in HTTP/SSE mode');
+    console.error(`Connect via: http://localhost:${port}/mcp/sse/:sessionId`);
   }
 }
 
