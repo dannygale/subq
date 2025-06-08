@@ -341,14 +341,21 @@ Software architecture expert guiding comprehensive design processes. Perfect for
 
 ### Using Profiles
 
-1. **Copy profile content as system prompt:**
+1. **Use the profile flag with Q chat:**
    ```bash
-   cat ~/.aws/amazonq/profiles/orchestrator.md | pbcopy
+   q chat --profile orchestrator
    ```
 
-2. **Paste into Q chat as system prompt** before starting your conversation
+2. **Available profile commands:**
+   ```bash
+   q chat --profile orchestrator  # Complex task decomposition
+   q chat --profile tester       # Comprehensive testing strategy
+   q chat --profile developer    # Full-stack development
+   q chat --profile debug        # Deep debugging and analysis
+   q chat --profile architect    # Software architecture design
+   ```
 
-3. **The specialized agent will use SubQ tools** according to the role's expertise and patterns
+3. **The specialized agent will automatically use SubQ tools** according to the role's expertise and patterns
 
 ### Profile Benefits
 

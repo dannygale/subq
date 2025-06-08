@@ -219,17 +219,36 @@ if [ ! -d "$PROFILES_DIR" ]; then
     mkdir -p "$PROFILES_DIR"
 fi
 
-# Copy profile files
-PROFILE_FILES=("orchestrator.md" "tester.md" "developer.md" "debug.md" "architect.md")
+# Define profiles to install
+PROFILE_NAMES=("orchestrator" "tester" "developer" "debug" "architect")
 PROFILES_INSTALLED=0
 
-for profile in "${PROFILE_FILES[@]}"; do
-    if [ -f "$SCRIPT_DIR/src/profiles/$profile" ]; then
-        cp "$SCRIPT_DIR/src/profiles/$profile" "$PROFILES_DIR/"
+# Create each profile directory and configuration
+for profile in "${PROFILE_NAMES[@]}"; do
+    PROFILE_DIR="$PROFILES_DIR/$profile"
+    PROFILE_FILE="$SCRIPT_DIR/src/profiles/$profile.md"
+    
+    if [ -f "$PROFILE_FILE" ]; then
+        # Create profile directory
+        mkdir -p "$PROFILE_DIR"
+        
+        # Copy the profile markdown file
+        cp "$PROFILE_FILE" "$PROFILE_DIR/system-prompt.md"
+        
+        # Create context.json configuration
+        cat > "$PROFILE_DIR/context.json" << EOF
+{
+  "paths": [
+    "system-prompt.md"
+  ],
+  "hooks": {}
+}
+EOF
+        
         print_status "Installed profile: $profile"
         PROFILES_INSTALLED=$((PROFILES_INSTALLED + 1))
     else
-        print_warning "Profile file not found: $SCRIPT_DIR/src/profiles/$profile"
+        print_warning "Profile file not found: $PROFILE_FILE"
     fi
 done
 
@@ -238,14 +257,14 @@ if [ $PROFILES_INSTALLED -gt 0 ]; then
     print_status "Profiles location: $PROFILES_DIR"
     print_status ""
     print_status "Available profiles:"
-    print_status "  • orchestrator.md - Breaks down complex tasks into parallel sub-tasks"
-    print_status "  • tester.md - Specializes in comprehensive test strategy and implementation"
-    print_status "  • developer.md - Full-stack development with broad technical expertise"
-    print_status "  • debug.md - Deep debugging and systematic issue resolution"
-    print_status "  • architect.md - Software architecture and comprehensive design process"
+    print_status "  • orchestrator - Breaks down complex tasks into parallel sub-tasks"
+    print_status "  • tester - Specializes in comprehensive test strategy and implementation"
+    print_status "  • developer - Full-stack development with broad technical expertise"
+    print_status "  • debug - Deep debugging and systematic issue resolution"
+    print_status "  • architect - Software architecture and comprehensive design processes"
     print_status ""
-    print_status "Usage: Copy profile content and paste as system prompt in Q chat"
-    print_status "Example: cat ~/.aws/amazonq/profiles/orchestrator.md | pbcopy"
+    print_status "Usage: Use 'q chat --profile <profile-name>' to activate a specialized role"
+    print_status "Example: q chat --profile orchestrator"
 else
     print_warning "No profiles were installed"
 fi
@@ -272,7 +291,8 @@ print_status "  • subq___send_to - Send input to a running process"
 print_status "  • subq___cleanup - Clean up finished processes"
 print_status ""
 print_status "Role-based profiles installed in: ~/.aws/amazonq/profiles/"
-print_status "Use profiles as system prompts to specialize Q for different tasks"
+print_status "Use 'q chat --profile <profile-name>' to activate specialized roles"
 print_status ""
 print_status "You can now use SubQ with Amazon Q CLI!"
-print_status "Example: Ask Q to 'spawn a new process to analyze my AWS costs'"
+print_status "Example: q chat --profile orchestrator"
+print_status "Then ask: 'spawn a new process to analyze my AWS costs'"
