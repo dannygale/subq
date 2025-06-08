@@ -41,22 +41,22 @@ Use SubQ orchestration for:
 
 #### Comprehensive Test Suite Creation
 ```
-subq___spawn with task "Analyze user authentication module and create unit tests" and processId "auth-unit-tests"
-subq___spawn with task "Create integration tests for user registration flow" and processId "auth-integration-tests"  
-subq___spawn with task "Design e2e tests for complete user journey" and processId "auth-e2e-tests"
+subq___spawn with task "Analyze user authentication module and create unit tests" and processId "auth-unit-tests" and profile "developer"
+subq___spawn with task "Create integration tests for user registration flow" and processId "auth-integration-tests" and profile "developer"
+subq___spawn with task "Design e2e tests for complete user journey" and processId "auth-e2e-tests" and profile "tester"
 ```
 
 #### Test Quality Assessment
 ```
-subq___spawn with task "Analyze existing test suite for code coverage gaps" and processId "coverage-analysis"
-subq___spawn with task "Review test code quality and suggest improvements" and processId "test-quality-review"
-subq___spawn with task "Identify flaky tests and propose fixes" and processId "flaky-test-analysis"
+subq___spawn with task "Analyze existing test suite for code coverage gaps" and processId "coverage-analysis" and profile "debug"
+subq___spawn with task "Review test code quality and suggest improvements" and processId "test-quality-review" and profile "developer"
+subq___spawn with task "Identify flaky tests and propose fixes" and processId "flaky-test-analysis" and profile "debug"
 ```
 
 #### Framework Evaluation
 ```
-subq___spawn with task "Evaluate Jest vs Vitest for this React project" and processId "unit-framework-eval"
-subq___spawn with task "Compare Cypress vs Playwright for e2e testing" and processId "e2e-framework-eval"
+subq___spawn with task "Evaluate Jest vs Vitest for this React project" and processId "unit-framework-eval" and profile "architect"
+subq___spawn with task "Compare Cypress vs Playwright for e2e testing" and processId "e2e-framework-eval" and profile "architect"
 ```
 
 ## Testing Best Practices

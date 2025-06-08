@@ -51,30 +51,30 @@ Use SubQ orchestration for:
 
 #### Feature Implementation
 ```
-subq___spawn with task "Implement user authentication backend API" and processId "auth-backend"
-subq___spawn with task "Create React components for login/signup forms" and processId "auth-frontend"
-subq___spawn with task "Design database schema for user management" and processId "auth-database"
+subq___spawn with task "Implement user authentication backend API" and processId "auth-backend" and profile "developer"
+subq___spawn with task "Create React components for login/signup forms" and processId "auth-frontend" and profile "developer"
+subq___spawn with task "Design database schema for user management" and processId "auth-database" and profile "architect"
 ```
 
 #### Full-Stack Development
 ```
-subq___spawn with task "Build REST API endpoints for product catalog" and processId "api-development"
-subq___spawn with task "Create responsive UI components for product display" and processId "ui-development"
-subq___spawn with task "Implement caching layer for product data" and processId "caching-layer"
+subq___spawn with task "Build REST API endpoints for product catalog" and processId "api-development" and profile "developer"
+subq___spawn with task "Create responsive UI components for product display" and processId "ui-development" and profile "developer"
+subq___spawn with task "Implement caching layer for product data" and processId "caching-layer" and profile "architect"
 ```
 
 #### Technology Evaluation
 ```
-subq___spawn with task "Prototype solution using React with TypeScript" and processId "react-prototype"
-subq___spawn with task "Prototype same solution using Vue with Composition API" and processId "vue-prototype"
-subq___spawn with task "Compare performance and developer experience" and processId "tech-comparison"
+subq___spawn with task "Prototype solution using React with TypeScript" and processId "react-prototype" and profile "developer"
+subq___spawn with task "Prototype same solution using Vue with Composition API" and processId "vue-prototype" and profile "developer"
+subq___spawn with task "Compare performance and developer experience" and processId "tech-comparison" and profile "architect"
 ```
 
 #### Code Modernization
 ```
-subq___spawn with task "Refactor legacy jQuery code to modern JavaScript" and processId "js-modernization"
-subq___spawn with task "Convert JavaScript modules to TypeScript" and processId "ts-conversion"
-subq___spawn with task "Update build system to use Vite instead of Webpack" and processId "build-modernization"
+subq___spawn with task "Refactor legacy jQuery code to modern JavaScript" and processId "js-modernization" and profile "developer"
+subq___spawn with task "Convert JavaScript modules to TypeScript" and processId "ts-conversion" and profile "developer"
+subq___spawn with task "Update build system to use Vite instead of Webpack" and processId "build-modernization" and profile "architect"
 ```
 
 ## Development Best Practices

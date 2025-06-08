@@ -155,17 +155,20 @@ tail -f server.log
 ### Available Tools
 
 #### `spawn`
-Spawn a new Q process with a specific task.
+Spawn a new Q process with a specific task and optional profile.
 
 **Parameters:**
 - `task` (required): The task or prompt to send to the Q process
 - `processId` (optional): Custom process ID (auto-generated if not provided)
 - `timeout` (optional): Timeout in seconds (default: 300)
 - `workingDirectory` (optional): Working directory for the Q process
+- `profile` (optional): Profile to use for the Q process (orchestrator, tester, developer, debug, architect)
 
-**Example:**
+**Examples:**
 ```
 subq___spawn with task "Analyze the AWS costs in my account and provide optimization recommendations"
+subq___spawn with task "Create comprehensive test suite for user authentication" and profile "tester"
+subq___spawn with task "Debug performance issues in the payment service" and profile "debug"
 ```
 
 #### `list`
@@ -222,10 +225,10 @@ subq___cleanup
 
 ### Parallel Task Execution
 ```
-# Spawn multiple Q processes for different tasks
-subq___spawn with task "Analyze EC2 instances for cost optimization"
-subq___spawn with task "Review S3 bucket policies for security issues"
-subq___spawn with task "Generate CloudFormation template for a web application"
+# Spawn multiple Q processes for different tasks with specialized profiles
+subq___spawn with task "Analyze EC2 instances for cost optimization" and profile "architect"
+subq___spawn with task "Review S3 bucket policies for security issues" and profile "debug"
+subq___spawn with task "Generate CloudFormation template for a web application" and profile "developer"
 
 # Check their progress
 subq___list
@@ -237,8 +240,8 @@ subq___get_output with processId "process-2"
 
 ### Long-Running Analysis
 ```
-# Start a comprehensive analysis
-subq___spawn with task "Perform a complete security audit of my AWS infrastructure" and timeout 1800
+# Start a comprehensive analysis with specialized profile
+subq___spawn with task "Perform a complete security audit of my AWS infrastructure" and timeout 1800 and profile "debug"
 
 # Check progress periodically
 subq___get_output with processId "audit-process"
@@ -249,10 +252,10 @@ subq___send_to with processId "audit-process" and input "Focus on IAM policies a
 
 ### Batch Processing
 ```
-# Process multiple files or resources
-subq___spawn with task "Analyze CloudTrail logs from the last 24 hours"
-subq___spawn with task "Review all Lambda functions for performance issues"
-subq___spawn with task "Check RDS instances for optimization opportunities"
+# Process multiple files or resources with appropriate specialists
+subq___spawn with task "Analyze CloudTrail logs from the last 24 hours" and profile "debug"
+subq___spawn with task "Review all Lambda functions for performance issues" and profile "debug"
+subq___spawn with task "Check RDS instances for optimization opportunities" and profile "architect"
 
 # Clean up when done
 subq___cleanup

@@ -59,6 +59,10 @@ class SubQMCPServer {
                   type: 'string',
                   description: 'Optional working directory for the Q process',
                 },
+                profile: {
+                  type: 'string',
+                  description: 'Optional profile to use for the Q process (orchestrator, tester, developer, debug, architect)',
+                },
               },
               required: ['task'],
             },
@@ -177,20 +181,23 @@ class SubQMCPServer {
   }
 
   private async handleSpawnQProcess(args: any, processManager: any) {
-    const { task, processId, timeout = 300, workingDirectory } = args;
+    const { task, processId, timeout = 300, workingDirectory, profile } = args;
     
     const result = await processManager.spawnQProcess({
       task,
       processId,
       timeout,
       workingDirectory,
+      profile,
     });
 
+    const profileText = profile ? `\nProfile: ${profile}` : '';
+    
     return {
       content: [
         {
           type: 'text',
-          text: `Q process spawned successfully!\nProcess ID: ${result.id}\nStatus: ${result.status}\nTask: ${task}`,
+          text: `Q process spawned successfully!\nProcess ID: ${result.id}\nStatus: ${result.status}${profileText}\nTask: ${task}`,
         },
       ],
     };
@@ -199,9 +206,10 @@ class SubQMCPServer {
   private async handleListQProcesses(processManager: any) {
     const processes = processManager.listProcesses();
     
-    const processInfo = processes.map((p: any) => 
-      `ID: ${p.id}\nStatus: ${p.status}\nTask: ${p.task}\nStarted: ${p.startTime.toISOString()}\nPID: ${p.pid || 'N/A'}`
-    ).join('\n\n');
+    const processInfo = processes.map((p: any) => {
+      const profileText = p.profile ? `\nProfile: ${p.profile}` : '';
+      return `ID: ${p.id}\nStatus: ${p.status}${profileText}\nTask: ${p.task}\nStarted: ${p.startTime.toISOString()}\nPID: ${p.pid || 'N/A'}`;
+    }).join('\n\n');
 
     return {
       content: [

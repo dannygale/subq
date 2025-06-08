@@ -10,6 +10,7 @@ export interface QProcessInfo {
   endTime?: Date;
   workingDirectory?: string;
   timeout: number;
+  profile?: string;
 }
 
 export interface QProcessData extends QProcessInfo {
@@ -24,6 +25,7 @@ export interface SpawnQProcessOptions {
   processId?: string;
   timeout?: number;
   workingDirectory?: string;
+  profile?: string;
 }
 
 export class QProcessManager {
@@ -35,6 +37,7 @@ export class QProcessManager {
       processId = uuidv4(),
       timeout = 300,
       workingDirectory = process.cwd(),
+      profile,
     } = options;
 
     // Check if process ID already exists
@@ -49,6 +52,7 @@ export class QProcessManager {
       startTime: new Date(),
       workingDirectory,
       timeout,
+      profile,
       output: [],
       errorOutput: [],
     };
@@ -56,8 +60,14 @@ export class QProcessManager {
     this.processes.set(processId, processData);
 
     try {
+      // Build Q command arguments
+      const qArgs = ['chat'];
+      if (profile) {
+        qArgs.push('--profile', profile);
+      }
+
       // Spawn the Q process
-      const qProcess = spawn('q', ['chat'], {
+      const qProcess = spawn('q', qArgs, {
         cwd: workingDirectory,
         stdio: ['pipe', 'pipe', 'pipe'],
       });

@@ -62,33 +62,33 @@ Use SubQ orchestration for:
 
 #### Comprehensive System Design
 ```
-subq___spawn with task "Design microservices architecture for e-commerce platform" and processId "microservices-design"
-subq___spawn with task "Create data architecture and database design" and processId "data-architecture"
-subq___spawn with task "Design security architecture and compliance strategy" and processId "security-architecture"
-subq___spawn with task "Plan deployment and infrastructure architecture" and processId "infrastructure-design"
+subq___spawn with task "Design microservices architecture for e-commerce platform" and processId "microservices-design" and profile "architect"
+subq___spawn with task "Create data architecture and database design" and processId "data-architecture" and profile "architect"
+subq___spawn with task "Design security architecture and compliance strategy" and processId "security-architecture" and profile "architect"
+subq___spawn with task "Plan deployment and infrastructure architecture" and processId "infrastructure-design" and profile "architect"
 ```
 
 #### Technology Evaluation
 ```
-subq___spawn with task "Evaluate microservices vs monolithic architecture for this use case" and processId "architecture-comparison"
-subq___spawn with task "Compare SQL vs NoSQL database options" and processId "database-evaluation"
-subq___spawn with task "Assess cloud providers (AWS vs Azure vs GCP) for requirements" and processId "cloud-evaluation"
+subq___spawn with task "Evaluate microservices vs monolithic architecture for this use case" and processId "architecture-comparison" and profile "architect"
+subq___spawn with task "Compare SQL vs NoSQL database options" and processId "database-evaluation" and profile "architect"
+subq___spawn with task "Assess cloud providers (AWS vs Azure vs GCP) for requirements" and processId "cloud-evaluation" and profile "architect"
 ```
 
 #### Migration Architecture
 ```
-subq___spawn with task "Analyze current legacy system architecture and constraints" and processId "legacy-analysis"
-subq___spawn with task "Design target modern architecture" and processId "target-architecture"
-subq___spawn with task "Create migration strategy and transition plan" and processId "migration-planning"
-subq___spawn with task "Design data migration and synchronization approach" and processId "data-migration-design"
+subq___spawn with task "Analyze current legacy system architecture and constraints" and processId "legacy-analysis" and profile "debug"
+subq___spawn with task "Design target modern architecture" and processId "target-architecture" and profile "architect"
+subq___spawn with task "Create migration strategy and transition plan" and processId "migration-planning" and profile "architect"
+subq___spawn with task "Design data migration and synchronization approach" and processId "data-migration-design" and profile "architect"
 ```
 
 #### Documentation Generation
 ```
-subq___spawn with task "Create system architecture diagrams and documentation" and processId "architecture-docs"
-subq___spawn with task "Generate API specifications and integration guides" and processId "api-documentation"
-subq___spawn with task "Develop deployment and operations runbooks" and processId "ops-documentation"
-subq___spawn with task "Create developer onboarding and contribution guides" and processId "dev-documentation"
+subq___spawn with task "Create system architecture diagrams and documentation" and processId "architecture-docs" and profile "architect"
+subq___spawn with task "Generate API specifications and integration guides" and processId "api-documentation" and profile "developer"
+subq___spawn with task "Develop deployment and operations runbooks" and processId "ops-documentation" and profile "architect"
+subq___spawn with task "Create developer onboarding and contribution guides" and processId "dev-documentation" and profile "developer"
 ```
 
 ## Architecture Artifacts & Deliverables

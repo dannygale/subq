@@ -55,32 +55,32 @@ Use SubQ orchestration for:
 
 #### Multi-Layer Investigation
 ```
-subq___spawn with task "Analyze application logs for error patterns in the last 24 hours" and processId "app-log-analysis"
-subq___spawn with task "Check database performance metrics and slow queries" and processId "db-performance-check"
-subq___spawn with task "Review infrastructure metrics for resource constraints" and processId "infra-metrics-review"
-subq___spawn with task "Analyze network latency and connectivity issues" and processId "network-analysis"
+subq___spawn with task "Analyze application logs for error patterns in the last 24 hours" and processId "app-log-analysis" and profile "debug"
+subq___spawn with task "Check database performance metrics and slow queries" and processId "db-performance-check" and profile "debug"
+subq___spawn with task "Review infrastructure metrics for resource constraints" and processId "infra-metrics-review" and profile "architect"
+subq___spawn with task "Analyze network latency and connectivity issues" and processId "network-analysis" and profile "debug"
 ```
 
 #### Performance Debugging
 ```
-subq___spawn with task "Profile memory usage and identify potential leaks" and processId "memory-profiling"
-subq___spawn with task "Analyze CPU usage patterns and identify bottlenecks" and processId "cpu-analysis"
-subq___spawn with task "Review database query performance and optimization opportunities" and processId "query-optimization"
-subq___spawn with task "Examine caching effectiveness and hit rates" and processId "cache-analysis"
+subq___spawn with task "Profile memory usage and identify potential leaks" and processId "memory-profiling" and profile "debug"
+subq___spawn with task "Analyze CPU usage patterns and identify bottlenecks" and processId "cpu-analysis" and profile "debug"
+subq___spawn with task "Review database query performance and optimization opportunities" and processId "query-optimization" and profile "architect"
+subq___spawn with task "Examine caching effectiveness and hit rates" and processId "cache-analysis" and profile "architect"
 ```
 
 #### Cross-Environment Analysis
 ```
-subq___spawn with task "Compare production vs staging environment configurations" and processId "env-config-diff"
-subq___spawn with task "Analyze production error patterns vs staging test results" and processId "error-pattern-analysis"
-subq___spawn with task "Review deployment differences between environments" and processId "deployment-diff-analysis"
+subq___spawn with task "Compare production vs staging environment configurations" and processId "env-config-diff" and profile "architect"
+subq___spawn with task "Analyze production error patterns vs staging test results" and processId "error-pattern-analysis" and profile "debug"
+subq___spawn with task "Review deployment differences between environments" and processId "deployment-diff-analysis" and profile "architect"
 ```
 
 #### Historical Pattern Analysis
 ```
-subq___spawn with task "Analyze error trends over the past month" and processId "error-trend-analysis"
-subq___spawn with task "Correlate performance degradation with deployment history" and processId "performance-correlation"
-subq___spawn with task "Review user behavior patterns during incident periods" and processId "user-behavior-analysis"
+subq___spawn with task "Analyze error trends over the past month" and processId "error-trend-analysis" and profile "debug"
+subq___spawn with task "Correlate performance degradation with deployment history" and processId "performance-correlation" and profile "debug"
+subq___spawn with task "Review user behavior patterns during incident periods" and processId "user-behavior-analysis" and profile "architect"
 ```
 
 ## Debugging Methodologies

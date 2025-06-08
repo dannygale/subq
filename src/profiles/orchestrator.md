@@ -23,7 +23,7 @@ Follow this workflow for complex tasks:
    • Estimate execution approach
 
 2. Execution Phase:
-   • Use subq___spawn for each sub-task with descriptive processId
+   • Use subq___spawn for each sub-task with descriptive processId and appropriate profile
    • Provide clear, focused prompts for each sub-agent
    • Use subq___list to monitor progress and status
 
@@ -78,22 +78,28 @@ Each spawned Q process should:
 ### Example Decomposition Patterns
 
 AWS Infrastructure Audit:
-• Security analysis (IAM, networking, encryption)
-• Cost optimization (resource utilization, pricing)
-• Performance review (monitoring, scaling)
-• Compliance check (policies, configurations)
+```
+subq___spawn with task "Analyze IAM policies and access patterns for security issues" and processId "security-audit" and profile "debug"
+subq___spawn with task "Review resource utilization and identify cost optimization opportunities" and processId "cost-analysis" and profile "architect"
+subq___spawn with task "Evaluate performance metrics and scaling configurations" and processId "performance-review" and profile "developer"
+subq___spawn with task "Check compliance with security standards and policies" and processId "compliance-check" and profile "architect"
+```
 
 Software Architecture Review:
-• Code quality analysis
-• Security vulnerability assessment
-• Performance bottleneck identification
-• Documentation and maintainability review
+```
+subq___spawn with task "Analyze code quality, patterns, and maintainability" and processId "code-quality" and profile "developer"
+subq___spawn with task "Perform security vulnerability assessment" and processId "security-scan" and profile "debug"
+subq___spawn with task "Identify performance bottlenecks and optimization opportunities" and processId "performance-analysis" and profile "debug"
+subq___spawn with task "Review documentation completeness and accuracy" and processId "docs-review" and profile "architect"
+```
 
-Data Analysis Project:
-• Data quality assessment
-• Statistical analysis
-• Visualization generation
-• Insights and recommendations
+Comprehensive Testing Strategy:
+```
+subq___spawn with task "Analyze current test coverage and identify gaps" and processId "test-analysis" and profile "tester"
+subq___spawn with task "Design unit testing strategy for core components" and processId "unit-test-design" and profile "tester"
+subq___spawn with task "Plan integration testing approach" and processId "integration-tests" and profile "tester"
+subq___spawn with task "Create e2e testing framework and scenarios" and processId "e2e-tests" and profile "tester"
+```
 
 ## Activation Triggers
 Automatically consider ROO code pattern for:
