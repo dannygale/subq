@@ -13,16 +13,23 @@ An MCP (Model Context Protocol) server that allows you to spawn and manage multi
 
 ## Installation
 
-1. Clone or download this repository
-2. Run the installation script:
+### Quick Install (Recommended)
+
 ```bash
 ./install.sh
 ```
 
 This will:
 - Install dependencies and build the project
+- Start the HTTP/SSE server for multi-session support
 - Configure the MCP server in `~/.aws/amazonq/mcp.json`
 - Replace any existing SubQ configuration
+
+### Custom Port Installation
+
+```bash
+./install.sh --port=8948
+```
 
 ### Manual Installation
 
@@ -44,30 +51,92 @@ npm run build
   "mcpServers": {
     "subq": {
       "command": "node",
-      "args": ["dist/index.js"],
-      "cwd": "/path/to/mcpq"
+      "args": ["http-client.js"],
+      "cwd": "/path/to/mcpq",
+      "env": {
+        "SUBQ_SERVER_URL": "http://localhost:8947"
+      }
     }
   }
 }
 ```
 
-## Usage
+4. Start the HTTP server:
+```bash
+node dist/index.js --port=8947
+```
 
-### Adding to Q CLI
+## Architecture
 
-Add the MCP server to your Q CLI configuration. The server communicates via stdio.
+### HTTP/SSE Mode (Multi-Session)
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Q Session 1   │    │   Q Session 2   │    │   Q Session N   │
+│   (Client A)    │    │   (Client B)    │    │   (Client C)    │
+└─────────┬───────┘    └─────────┬───────┘    └─────────┬───────┘
+          │                      │                      │
+          └──────────────────────┼──────────────────────┘
+                                 │
+                    ┌─────────────▼─────────────┐
+                    │    HTTP/SSE MCP Server    │
+                    │   (Session Management)    │
+                    └─────────────┬─────────────┘
+                                 │
+                    ┌─────────────▼─────────────┐
+                    │   Session-Isolated        │
+                    │   Process Managers        │
+                    └───────────────────────────┘
+```
 
-Example configuration for Q CLI:
-```json
-{
-  "mcpServers": {
-    "subq": {
-      "command": "node",
-      "args": ["dist/index.js"],
-      "cwd": "/path/to/mcpq"
-    }
-  }
-}
+**Features:**
+- **Session Isolation**: Each Q CLI session gets its own process pool
+- **Multiple Connections**: Support for simultaneous Q sessions
+- **Remote Ready**: HTTP-based for future remote deployments
+- **Admin Interface**: Web endpoints for monitoring and management
+
+## Session Management
+
+### Session Features
+
+**Automatic Session Creation:**
+- Each Q CLI connection gets a unique session ID
+- Sessions are automatically created on first connection
+- Process pools are isolated per session
+
+**Session Lifecycle:**
+- **Creation**: Automatic on first tool use
+- **Activity Tracking**: Sessions track last activity timestamp
+- **Timeout**: Inactive sessions cleaned up after 30 minutes
+- **Cleanup**: All session processes terminated on cleanup
+
+**Session Isolation:**
+- Each session has its own `QProcessManager`
+- Processes spawned in one session are invisible to others
+- `subq___list` only shows processes from your session
+- `subq___get_output` only accesses your session's processes
+
+### Monitoring and Administration
+
+**Health Check:**
+```bash
+curl http://localhost:8947/health
+```
+
+**View Active Sessions:**
+```bash
+curl http://localhost:8947/admin/sessions
+```
+
+**Server Management:**
+```bash
+# Stop server
+kill $(cat server.pid)
+
+# View server logs
+tail -f server.log
+
+# Restart server
+./start-server.sh
 ```
 
 ### Available Tools
