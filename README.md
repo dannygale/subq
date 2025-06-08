@@ -23,6 +23,7 @@ This will:
 - Install dependencies and build the project
 - Start the HTTP/SSE server for multi-session support
 - Configure the MCP server in `~/.aws/amazonq/mcp.json`
+- Install role-based profiles in `~/.aws/amazonq/profiles/`
 - Replace any existing SubQ configuration
 
 ### Custom Port Installation
@@ -296,6 +297,66 @@ The server handles various error conditions:
 - Working directory can be specified to isolate file operations
 - Processes are automatically cleaned up on server shutdown
 - Timeout mechanisms prevent runaway processes
+
+## Role-Based Profiles
+
+SubQ includes specialized system prompts for different software development roles. These profiles are automatically installed to `~/.aws/amazonq/profiles/` during installation.
+
+### Available Profiles
+
+#### **Orchestrator** (`orchestrator.md`)
+Specializes in breaking down complex tasks into manageable sub-tasks using the ROO (Recursive Orchestration Optimization) pattern. Perfect for:
+- Complex multi-domain analysis
+- Large-scale system reviews
+- Tasks requiring parallel processing
+- Comprehensive audits and assessments
+
+#### **Tester** (`tester.md`)
+Expert in comprehensive test strategy and implementation across all testing levels. Ideal for:
+- Creating unit, integration, and e2e test suites
+- Test gap analysis and coverage improvement
+- Testing framework evaluation and migration
+- Quality assurance strategy development
+
+#### **Developer** (`developer.md`)
+Full-stack development specialist with broad technical expertise. Great for:
+- Feature implementation across multiple technologies
+- Code quality improvement and refactoring
+- Technology evaluation and adoption
+- Cross-platform development projects
+
+#### **Debug** (`debug.md`)
+Deep debugging specialist focused on systematic issue resolution. Essential for:
+- Complex multi-layer debugging scenarios
+- Performance analysis and optimization
+- Production incident investigation
+- Root cause analysis and prevention
+
+#### **Architect** (`architect.md`)
+Software architecture expert guiding comprehensive design processes. Perfect for:
+- System architecture design and evaluation
+- Technology stack selection and planning
+- Migration strategy development
+- Complete project planning from concept to implementation
+
+### Using Profiles
+
+1. **Copy profile content as system prompt:**
+   ```bash
+   cat ~/.aws/amazonq/profiles/orchestrator.md | pbcopy
+   ```
+
+2. **Paste into Q chat as system prompt** before starting your conversation
+
+3. **The specialized agent will use SubQ tools** according to the role's expertise and patterns
+
+### Profile Benefits
+
+- **Specialized Expertise**: Each profile brings deep domain knowledge
+- **SubQ Integration**: Profiles include specific patterns for using SubQ orchestration
+- **Best Practices**: Industry-standard methodologies and approaches
+- **Consistent Quality**: Standardized approaches across different roles
+- **Team Collaboration**: Shared understanding of role responsibilities
 
 ## Limitations
 

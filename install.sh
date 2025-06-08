@@ -210,6 +210,46 @@ else
     exit 1
 fi
 
+# Install role profiles for Amazon Q
+print_status "Installing role-based profiles for Amazon Q..."
+
+PROFILES_DIR="$HOME/.aws/amazonq/profiles"
+if [ ! -d "$PROFILES_DIR" ]; then
+    print_status "Creating profiles directory: $PROFILES_DIR"
+    mkdir -p "$PROFILES_DIR"
+fi
+
+# Copy profile files
+PROFILE_FILES=("orchestrator.md" "tester.md" "developer.md" "debug.md" "architect.md")
+PROFILES_INSTALLED=0
+
+for profile in "${PROFILE_FILES[@]}"; do
+    if [ -f "$SCRIPT_DIR/src/profiles/$profile" ]; then
+        cp "$SCRIPT_DIR/src/profiles/$profile" "$PROFILES_DIR/"
+        print_status "Installed profile: $profile"
+        PROFILES_INSTALLED=$((PROFILES_INSTALLED + 1))
+    else
+        print_warning "Profile file not found: $SCRIPT_DIR/src/profiles/$profile"
+    fi
+done
+
+if [ $PROFILES_INSTALLED -gt 0 ]; then
+    print_success "Installed $PROFILES_INSTALLED role-based profiles!"
+    print_status "Profiles location: $PROFILES_DIR"
+    print_status ""
+    print_status "Available profiles:"
+    print_status "  • orchestrator.md - Breaks down complex tasks into parallel sub-tasks"
+    print_status "  • tester.md - Specializes in comprehensive test strategy and implementation"
+    print_status "  • developer.md - Full-stack development with broad technical expertise"
+    print_status "  • debug.md - Deep debugging and systematic issue resolution"
+    print_status "  • architect.md - Software architecture and comprehensive design process"
+    print_status ""
+    print_status "Usage: Copy profile content and paste as system prompt in Q chat"
+    print_status "Example: cat ~/.aws/amazonq/profiles/orchestrator.md | pbcopy"
+else
+    print_warning "No profiles were installed"
+fi
+
 print_success "SubQ MCP Server installation completed!"
 print_status ""
 print_status "Features:"
@@ -230,6 +270,9 @@ print_status "  • subq___get_output - Get output from a specific process"
 print_status "  • subq___terminate - Terminate a specific process"
 print_status "  • subq___send_to - Send input to a running process"
 print_status "  • subq___cleanup - Clean up finished processes"
+print_status ""
+print_status "Role-based profiles installed in: ~/.aws/amazonq/profiles/"
+print_status "Use profiles as system prompts to specialize Q for different tasks"
 print_status ""
 print_status "You can now use SubQ with Amazon Q CLI!"
 print_status "Example: Ask Q to 'spawn a new process to analyze my AWS costs'"
