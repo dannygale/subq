@@ -31,6 +31,16 @@ This will:
 ./install.sh --port=8948
 ```
 
+### Verify Installation
+
+After installation, you can verify that the configuration is correct:
+
+```bash
+./verify-config.sh
+```
+
+This will check that the MCP configuration uses absolute paths and can be accessed from any directory.
+
 ### Manual Installation
 
 If you prefer to install manually:
@@ -51,7 +61,7 @@ npm run build
   "mcpServers": {
     "subq": {
       "command": "node",
-      "args": ["http-client.js"],
+      "args": ["/path/to/mcpq/http-client.js"],
       "cwd": "/path/to/mcpq",
       "env": {
         "SUBQ_SERVER_URL": "http://localhost:8947"
@@ -60,6 +70,8 @@ npm run build
   }
 }
 ```
+
+**Important:** Make sure to use the absolute path in the `args` field (e.g., `/path/to/mcpq/http-client.js`) rather than a relative path. This ensures the MCP server can be accessed from any directory when running `q chat`.
 
 4. Start the HTTP server:
 ```bash

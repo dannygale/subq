@@ -86,7 +86,7 @@ print_status "Building the project..."
 npm run build
 
 # Make HTTP client executable
-chmod +x http-client.js
+chmod +x "$SCRIPT_DIR/http-client.js"
 
 # Create the MCP config directory if it doesn't exist
 if [ ! -d "$MCP_CONFIG_DIR" ]; then
@@ -121,7 +121,7 @@ if [ -f "$MCP_CONFIG_FILE" ]; then
             // Add or update the subq server configuration
             config.mcpServers.subq = {
                 command: 'node',
-                args: ['http-client.js'],
+                args: ['$SCRIPT_DIR/http-client.js'],
                 cwd: '$SCRIPT_DIR',
                 env: {
                     SUBQ_SERVER_URL: 'http://localhost:$PORT'
@@ -145,7 +145,7 @@ else
   "mcpServers": {
     "subq": {
       "command": "node",
-      "args": ["http-client.js"],
+      "args": ["$SCRIPT_DIR/http-client.js"],
       "cwd": "$SCRIPT_DIR",
       "env": {
         "SUBQ_SERVER_URL": "http://localhost:$PORT"
