@@ -1,9 +1,0 @@
-{
-  "mcpServers": {
-    "q-spawner": {
-      "command": "node",
-      "args": ["dist/index.js"],
-      "cwd": "/Users/dannygal/Documents/Projects/mcpq"
-    }
-  }
-}
