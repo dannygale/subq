@@ -34,8 +34,36 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MCP_CONFIG_DIR="$HOME/.aws/amazonq"
 MCP_CONFIG_FILE="$MCP_CONFIG_DIR/mcp.json"
 
+# Parse command line arguments
+PORT=8947
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --port)
+            PORT="$2"
+            shift 2
+            ;;
+        --port=*)
+            PORT="${1#*=}"
+            shift
+            ;;
+        -h|--help)
+            echo "Usage: $0 [OPTIONS]"
+            echo "Options:"
+            echo "  --port PORT     Set HTTP server port (default: 8947)"
+            echo "  -h, --help      Show this help message"
+            exit 0
+            ;;
+        *)
+            print_error "Unknown option: $1"
+            exit 1
+            ;;
+    esac
+done
+
 print_status "Installing SubQ MCP Server..."
 print_status "Script directory: $SCRIPT_DIR"
+print_status "Port: $PORT"
 
 # Check if Node.js is installed
 if ! command -v node &> /dev/null; then
@@ -57,6 +85,9 @@ npm install
 print_status "Building the project..."
 npm run build
 
+# Make HTTP client executable
+chmod +x http-client.js
+
 # Create the MCP config directory if it doesn't exist
 if [ ! -d "$MCP_CONFIG_DIR" ]; then
     print_status "Creating MCP config directory: $MCP_CONFIG_DIR"
@@ -77,7 +108,6 @@ if [ -f "$MCP_CONFIG_FILE" ]; then
     # Use Node.js to update the JSON configuration
     node -e "
         const fs = require('fs');
-        const path = require('path');
         
         try {
             const configPath = '$MCP_CONFIG_FILE';
@@ -91,8 +121,11 @@ if [ -f "$MCP_CONFIG_FILE" ]; then
             // Add or update the subq server configuration
             config.mcpServers.subq = {
                 command: 'node',
-                args: ['dist/index.js'],
-                cwd: '$SCRIPT_DIR'
+                args: ['http-client.js'],
+                cwd: '$SCRIPT_DIR',
+                env: {
+                    SUBQ_SERVER_URL: 'http://localhost:$PORT'
+                }
             };
             
             // Write the updated configuration
@@ -112,12 +145,44 @@ else
   "mcpServers": {
     "subq": {
       "command": "node",
-      "args": ["dist/index.js"],
-      "cwd": "$SCRIPT_DIR"
+      "args": ["http-client.js"],
+      "cwd": "$SCRIPT_DIR",
+      "env": {
+        "SUBQ_SERVER_URL": "http://localhost:$PORT"
+      }
     }
   }
 }
 EOF
+fi
+
+# Start HTTP server
+print_status "Starting SubQ HTTP server..."
+
+# Create a simple startup script
+cat > "$SCRIPT_DIR/start-server.sh" << EOF
+#!/bin/bash
+cd "$SCRIPT_DIR"
+node dist/index.js --port=$PORT
+EOF
+chmod +x "$SCRIPT_DIR/start-server.sh"
+
+# Start the server in the background
+nohup "$SCRIPT_DIR/start-server.sh" > "$SCRIPT_DIR/server.log" 2>&1 &
+SERVER_PID=$!
+
+# Wait a moment for server to start
+sleep 2
+
+# Check if server is running
+if kill -0 $SERVER_PID 2>/dev/null; then
+    print_success "SubQ HTTP server started (PID: $SERVER_PID)"
+    echo $SERVER_PID > "$SCRIPT_DIR/server.pid"
+    print_status "Server logs: $SCRIPT_DIR/server.log"
+    print_status "To stop server: kill \$(cat $SCRIPT_DIR/server.pid)"
+else
+    print_error "Failed to start SubQ HTTP server"
+    print_status "Check logs: $SCRIPT_DIR/server.log"
 fi
 
 # Verify the configuration
@@ -146,6 +211,17 @@ else
 fi
 
 print_success "SubQ MCP Server installation completed!"
+print_status ""
+print_status "Features:"
+print_status "  • Multiple simultaneous Q sessions supported"
+print_status "  • Session isolation - each Q session has its own process pool"
+print_status "  • Remote server capability for future extensions"
+print_status "  • Server running on: http://localhost:$PORT"
+print_status ""
+print_status "Management Commands:"
+print_status "  • View server status: curl http://localhost:$PORT/health"
+print_status "  • View active sessions: curl http://localhost:$PORT/admin/sessions"
+print_status "  • Stop server: kill \$(cat $SCRIPT_DIR/server.pid)"
 print_status ""
 print_status "Available tools (use with subq___ prefix):"
 print_status "  • subq___spawn - Spawn a new Q process with a task"
